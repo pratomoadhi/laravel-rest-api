@@ -112,26 +112,28 @@ class ProductController extends BaseController
      */
     public function store(Request $request)
     {
-        if (Gate::allows('isAdmin')) {
-            $input = $request->all();
-       
-            $validator = Validator::make($input, [
-                'name' => 'required',
-                'detail' => 'required'
-            ]);
-       
-            if($validator->fails()){
-                return $this->sendError('Validation Error.', $validator->errors());       
-            }
-       
-            $product = Product::create($input);
-       
-            return $this->sendResponse(new ProductResource($product), 'Product created successfully.', 201);
+        $this->authorize('create');
+
+        // if (Gate::allows('isAdmin')) {
+        $input = $request->all();
     
-        } else {
-            $error = "You are not allowed to POST";
-            return $this->sendError($error);
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'detail' => 'required'
+        ]);
+    
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
         }
+    
+        $product = Product::create($input);
+    
+        return $this->sendResponse(new ProductResource($product), 'Product created successfully.', 201);
+
+        // } else {
+        //     $error = "You are not allowed to POST";
+        //     return $this->sendError($error);
+        // }
     } 
    
     /**
@@ -228,6 +230,8 @@ class ProductController extends BaseController
      */
     public function update(Request $request, Product $product)
     {
+        $this->authorize('update', $product);
+
         $input = $request->all();
    
         $validator = Validator::make($input, [

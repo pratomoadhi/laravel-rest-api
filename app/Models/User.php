@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 // use Laravel\Sanctum\HasApiTokens;
 use Laravel\Passport\HasApiTokens;
+use App\Notifications\VerifyEmailQueued;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -43,4 +44,15 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+    * Send the queued email verification notification.
+    *
+    * @param  string  $token
+    * @return void
+    */
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmailQueued);
+    }
 }
